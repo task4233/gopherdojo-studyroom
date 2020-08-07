@@ -31,6 +31,9 @@ init() {
     rm -rf ./${DOCNAME}
     mkdir ./${DOCNAME}
     go get golang.org/x/tools/cmd/godoc
+
+    pwd
+    find ${GOPATH}/src/
     
     # install config file for layout
     echo "install config file for layout"
@@ -47,10 +50,6 @@ generate_godoc() {
 # Main
 # ------------
 init
-
-pwd
-find ${GOPATH}/src/
-
 generate_godoc
 
 
