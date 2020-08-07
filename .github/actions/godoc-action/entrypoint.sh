@@ -30,6 +30,7 @@ init() {
     echo "make directory setting for gh-pages"
     rm -rf ./${DOCNAME}
     mkdir ./${DOCNAME}
+    go get golang.org/x/tools/cmd/godoc
     
     # install config file for layout
     echo "install config file for layout"
