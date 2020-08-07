@@ -33,7 +33,7 @@ init() {
     go get golang.org/x/tools/cmd/godoc
 
     pwd
-    find ${GOPATH}/src/
+    find / | grep godoc
     
     # install config file for layout
     echo "install config file for layout"
