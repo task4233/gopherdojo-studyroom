@@ -45,11 +45,12 @@ generate_godoc() {
 # -------------
 # Main
 # ------------
+pwd
+find ${GOPATH}
+
 init
 generate_godoc
 
-pwd
-find ${GOPATH}
 
 exit ${SUCCESS}
 
