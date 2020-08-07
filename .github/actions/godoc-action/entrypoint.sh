@@ -46,10 +46,11 @@ generate_godoc() {
 # -------------
 # Main
 # ------------
+init
+
 pwd
 find ${GOPATH}/src/
 
-init
 generate_godoc
 
 
