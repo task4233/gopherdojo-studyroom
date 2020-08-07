@@ -32,14 +32,15 @@ init() {
     mkdir ./${DOCNAME}
     go get golang.org/x/tools/cmd/godoc
 
-    pwd
-    find / | grep godoc
+    pwd ${GOPATH}/pkg/mod/golang.org/x/tools@*/godoc/static/jquery.js
+    pwd ${GOPATH}/pkg/mod/golang.org/x/tools@*/godoc/static/godocs.js
+    pwd ${GOPATH}/pkg/mod/golang.org/x/tools@*/godoc/static/style.css 
     
     # install config file for layout
     echo "install config file for layout"
-    cp ${GOPATH}/src/golang.org/x/tools/godoc/static/jquery.js ./${DOCNAME}/
-    cp ${GOPATH}/src/golang.org/x/tools/godoc/static/godocs.js ./${DOCNAME}/
-    cp ${GOPATH}/src/golang.org/x/tools/godoc/static/style.css ./${DOCNAME}/
+    cp ${GOPATH}/pkg/mod/golang.org/x/tools@*/godoc/static/jquery.js ./${DOCNAME}/
+    cp ${GOPATH}/pkg/mod/golang.org/x/tools@*/godoc/static/godocs.js ./${DOCNAME}/
+    cp ${GOPATH}/pkg/mod/golang.org/x/tools@*/godoc/static/style.css ./${DOCNAME}/
 }
 
 generate_godoc() {
