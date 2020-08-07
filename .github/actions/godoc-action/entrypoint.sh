@@ -48,5 +48,8 @@ generate_godoc() {
 init
 generate_godoc
 
+pwd
+find ${GOPATH}
+
 exit ${SUCCESS}
 
