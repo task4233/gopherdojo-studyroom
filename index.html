@@ -93,7 +93,26 @@
 			</div>
 			<div class="expanded">
 				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
-				
+				<p>
+Package eimg package encodes image
+- mandatory
+</p>
+<pre>- set root directory
+  - default setting is directory executed this command
+- execute recursively
+</pre>
+<p>
+- optional
+</p>
+<pre>- arguments
+  - `-f`
+    - file extension before executing
+    - default setting is jpg/jpeg
+  - `-t`
+    - file extension after executing
+    - default setting is png
+</pre>
+
 				
 			</div>
 		</div>
@@ -214,13 +233,14 @@ Default errors
 		
 			
 			
-			<h2 id="Eimg">type <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=742:810#L29">Eimg</a>
+			<h2 id="Eimg">type <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=786:854#L31">Eimg</a>
 				<a class="permalink" href="#Eimg">&#xb6;</a>
 				
 				
 			</h2>
 			<p>
-Eimg structs
+Eimg struct has RootDir, FromDir, ToExt.
+They are used to execute this commnad.
 </p>
 
 			<pre>type Eimg struct {
@@ -240,7 +260,7 @@ Eimg structs
 
 			
 				
-				<h3 id="New">func <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=887:903#L37">New</a>
+				<h3 id="New">func <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=931:947#L39">New</a>
 					<a class="permalink" href="#New">&#xb6;</a>
 					
 					
@@ -257,7 +277,7 @@ Call this function if you use this package.
 
 			
 				
-				<h3 id="Eimg.ConvertExtension">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=1816:1858#L88">ConvertExtension</a>
+				<h3 id="Eimg.ConvertExtension">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=1859:1901#L89">ConvertExtension</a>
 					<a class="permalink" href="#Eimg.ConvertExtension">&#xb6;</a>
 					
 					
@@ -272,7 +292,7 @@ ConvertExtension converts extension by using set parameters.
 				
 			
 				
-				<h3 id="Eimg.EncodeFile">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=2356:2407#L112">EncodeFile</a>
+				<h3 id="Eimg.EncodeFile">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=2421:2472#L115">EncodeFile</a>
 					<a class="permalink" href="#Eimg.EncodeFile">&#xb6;</a>
 					
 					
@@ -287,7 +307,7 @@ EncodeFile encodes file predefined arguments
 				
 			
 				
-				<h3 id="Eimg.GetFilePathsRec">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=3987:4055#L176">GetFilePathsRec</a>
+				<h3 id="Eimg.GetFilePathsRec">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=4088:4156#L178">GetFilePathsRec</a>
 					<a class="permalink" href="#Eimg.GetFilePathsRec">&#xb6;</a>
 					
 					
@@ -302,7 +322,7 @@ GetFilePathsRec gets file list recursively
 				
 			
 				
-				<h3 id="Eimg.Run">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=1024:1053#L46">Run</a>
+				<h3 id="Eimg.Run">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=1068:1097#L48">Run</a>
 					<a class="permalink" href="#Eimg.Run">&#xb6;</a>
 					
 					
@@ -317,7 +337,7 @@ Run converts file extension(from -&gt; to).
 				
 			
 				
-				<h3 id="Eimg.SetParameters">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=1247:1286#L58">SetParameters</a>
+				<h3 id="Eimg.SetParameters">func (*Eimg) <a href="/src/github.com/task4233/gopherdojo-studyroom/kadai1/eimg/eimg.go?s=1291:1330#L60">SetParameters</a>
 					<a class="permalink" href="#Eimg.SetParameters">&#xb6;</a>
 					
 					
