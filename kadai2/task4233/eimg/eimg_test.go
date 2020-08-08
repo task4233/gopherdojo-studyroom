@@ -90,6 +90,8 @@ func TEncodeFile(t *testing.T) {
 		toExt    string
 		expected string
 	}{
+		{name: "invalid file", filePath: ".", fromExt: "txt", toExt: "", expected: "Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: Check the specified formats\nDebug: image: unknown format"},
+		{name: "invalid path", filePath: "test/test", fromExt: "", toExt: "", expected: "Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: open test/test: no such file or directory"},
 		{name: "check png", filePath: "test/img/green.jpeg", fromExt: "jpeg", toExt: "png", expected: "test/img/green.png"},
 		{name: "check jpg", filePath: "test/img/blue.gif", fromExt: "gif", toExt: "jpeg", expected: "test/img/blue.jpeg"},
 		{name: "check gif", filePath: "test/img/red.png", fromExt: "png", toExt: "gif", expected: "test/img/red.gif"},
@@ -118,10 +120,10 @@ func TEncodeFile(t *testing.T) {
 			eimg.FromExt = c.fromExt
 			eimg.ToExt = c.toExt
 			if err := eimg.EncodeFile(c.filePath); err != nil {
-				t.Errorf("%s: %s", c.filePath, err)
-			}
-
-			if _, err := os.Stat(c.expected); err != nil {
+				if err.Error() != c.expected {
+					t.Errorf("failed encodeFile():\n%s\n", err.Error())
+				}
+			} else if _, err := os.Stat(c.expected); err != nil {
 				t.Errorf("%s: %s", c.expected, err)
 			}
 		})
