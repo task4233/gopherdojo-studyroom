@@ -16,6 +16,8 @@ func TestEimg(t *testing.T) {
 
 // TSetParameters tests SetPerameters().
 func TSetParameters(t *testing.T) {
+	t.Helper()
+
 	cases := []struct {
 		name     string
 		rootDir  string
@@ -83,6 +85,8 @@ func TSetParameters(t *testing.T) {
 
 // TEncodeFile tests EncodeFile()
 func TEncodeFile(t *testing.T) {
+	t.Helper()
+
 	cases := []struct {
 		name     string
 		filePath string
@@ -132,6 +136,8 @@ func TEncodeFile(t *testing.T) {
 
 // TConvertExtension tests ConvertExtension()
 func TConvertExtension(t *testing.T) {
+	t.Helper()
+
 	cases := []struct {
 		name     string
 		rootDir  string
