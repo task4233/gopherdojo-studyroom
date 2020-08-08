@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html><head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0" selected="selected">github.com/task4233/gopherdojo-studyroom/kadai2/task4233/eimg/eimg.go (87.1%)</option>
+				
+				<option value="file1">github.com/task4233/gopherdojo-studyroom/kadai2/task4233/eimg/errors.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: block;">/*
+Package eimg encodes image files.
+Both before and after extension can be specified.
+Default setting is `.jpg/jpeg` -&gt; `.png`
+
+e.g.)
+eimg ./img -f=gif -t=jpg
+
+*/
+package eimg
+
+import (
+        "flag"
+        "fmt"
+        "image"
+        "image/gif"
+        "image/jpeg"
+        "image/png"
+        "io/ioutil"
+        "os"
+        "path/filepath"
+)
+
+const (
+        version = "0.0.1"
+        msg     = "eimg v" + version + ", converts file extension\n"
+)
+
+var (
+        fr = flag.String("f", "jpeg", "file extension before executing")
+        to = flag.String("t", "png", "file extension after executing")
+)
+
+// Eimg struct has RootDir, FromDir, ToExt.
+// They are used to execute this commnad.
+type Eimg struct {
+        RootDir string
+        FromExt string
+        ToExt   string
+}
+
+// New makes Eimg instance.
+// Call this function if you use this package.
+func New() *Eimg <span class="cov8" title="1">{
+        return &amp;Eimg{
+                RootDir: ".",
+                FromExt: "jpeg",
+                ToExt:   "png",
+        }
+}</span>
+
+// Run converts file extension(from -&gt; to).
+func (eimg *Eimg) Run() error <span class="cov8" title="1">{
+        if err := eimg.SetParameters(); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">if err := eimg.ConvertExtension(); err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+// SetParameters sets parameters for execution.
+func (eimg *Eimg) SetParameters() error <span class="cov8" title="1">{
+        if len(os.Args) == 1 </span><span class="cov0" title="0">{
+                fmt.Fprintf(os.Stderr, "Usage:\n\t./eimg [-f=fromExtension -t=toExtension] rootDir\n")
+                os.Exit(1)
+        }</span>
+
+        // Init Parameters
+        <span class="cov8" title="1">*fr = "jpeg"
+        *to = "png"
+
+        // parse information
+        flag.Parse()
+        args := flag.Args()
+
+        // set information.
+        if fr != nil &amp;&amp; *fr != "jpeg" </span><span class="cov8" title="1">{
+                eimg.FromExt = *fr
+        }</span>
+        <span class="cov8" title="1">if to != nil &amp;&amp; *to != "png" </span><span class="cov8" title="1">{
+                eimg.ToExt = *to
+        }</span> else<span class="cov8" title="1"> {
+                eimg.ToExt = "png"
+        }</span>
+        <span class="cov8" title="1">if args[len(args)-1] != "." </span><span class="cov8" title="1">{
+                if _, err := os.Stat(args[len(args)-1]); err != nil </span><span class="cov8" title="1">{
+                        return ErrInvalidPath.WithDebug(err.Error())
+                }</span>
+                <span class="cov8" title="1">eimg.RootDir = args[len(args)-1]</span>
+        }
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+// ConvertExtension converts extension by using set parameters.
+func (eimg *Eimg) ConvertExtension() error <span class="cov8" title="1">{
+        filePaths, err := eimg.GetFilePathsRec(eimg.RootDir)
+        if err != nil </span><span class="cov8" title="1">{
+                return ErrInvalidPath.WithDebug(err.Error())
+        }</span>
+
+        // encode each file
+        <span class="cov8" title="1">for _, filePath := range filePaths </span><span class="cov8" title="1">{
+                if filePath == "." </span><span class="cov0" title="0">{
+                        continue</span>
+                }
+                <span class="cov8" title="1">extension := filepath.Ext(filePath)
+                if extension == "" </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+
+                // filepath.Ext starts with "."
+                // e.g.) filepath.Ext(filePath) =&gt; .txt
+                <span class="cov8" title="1">fmt.Printf("file: %s, FromExt: %s\n", extension[1:], eimg.FromExt)
+                if extension[1:] == eimg.FromExt </span><span class="cov8" title="1">{
+                        err := eimg.EncodeFile(filePath)
+                        if err != nil </span><span class="cov8" title="1">{
+                                return err
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+
+// EncodeFile encodes file predefined arguments
+func (eimg *Eimg) EncodeFile(filePath string) error <span class="cov8" title="1">{
+        file, err := os.Open(filepath.Clean(filePath))
+        if err != nil </span><span class="cov8" title="1">{
+                return ErrInvalidPath.WithDebug(err.Error())
+        }</span>
+        // ref: https://www.yunabe.jp/docs/golang_pitfall.html
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
+                cerr := file.Close()
+                if cerr == nil </span><span class="cov8" title="1">{
+                        return
+                }</span>
+        }()
+
+        // make image object
+        <span class="cov8" title="1">img, _, err := image.Decode(file)
+        if err != nil </span><span class="cov8" title="1">{
+                return ErrFailedConvert.WithDebug(err.Error()).WithHint(filePath)
+        }</span>
+        <span class="cov8" title="1">out, err := os.Create(filePath)
+        if err != nil </span><span class="cov0" title="0">{
+                return ErrInvalidFormat.WithDebug(err.Error()).WithHint(filePath)
+        }</span>
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
+                cerr := out.Close()
+                if cerr == nil </span><span class="cov8" title="1">{
+                        return
+                }</span>
+        }()
+
+        // encode each file
+        <span class="cov8" title="1">switch eimg.ToExt </span>{
+        case "png":<span class="cov8" title="1">
+                err := png.Encode(out, img)
+                if err != nil </span><span class="cov0" title="0">{
+                        return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is png.")
+                }</span>
+        case "jpg", "jpeg":<span class="cov8" title="1">
+                err := jpeg.Encode(out, img, nil)
+                if err != nil </span><span class="cov0" title="0">{
+                        return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is jpeg/jpg.")
+                }</span>
+        case "gif":<span class="cov8" title="1">
+                err = gif.Encode(out, img, nil)
+                if err != nil </span><span class="cov0" title="0">{
+                        return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is gif.").WithHint(filePath)
+                }</span>
+        }
+
+        // convert each extension
+        <span class="cov8" title="1">fileName := filepath.Base(filePath) + filepath.Ext(filePath)
+        // fileName must meet len(fileName) &gt; len(eimg.FromExt)
+        if len(fileName) &lt;= len(eimg.FromExt) </span><span class="cov0" title="0">{
+                return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
+        }</span>
+        <span class="cov8" title="1">newFilePath := filePath[:len(filePath)-len(eimg.FromExt)] + eimg.ToExt
+        if err := os.Rename(filePath, newFilePath); err != nil </span><span class="cov0" title="0">{
+                return ErrFailedConvert.WithDebug(err.Error()).WithHint(filePath)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+// GetFilePathsRec gets file list recursively
+func (eimg *Eimg) GetFilePathsRec(filePath string) ([]string, error) <span class="cov8" title="1">{
+        // if declare by `var`, element might be nil
+        resFilePaths := make([]string, 0)
+
+        files, err := ioutil.ReadDir(filePath)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, ErrInvalidPath.WithDebug(err.Error())
+        }</span>
+
+        // add paths recursively
+        <span class="cov8" title="1">for _, file := range files </span><span class="cov8" title="1">{
+                nextFilePath := filepath.Join(filePath, file.Name())
+                if file.IsDir() </span><span class="cov8" title="1">{
+                        nextFiles, err := eimg.GetFilePathsRec(nextFilePath)
+                        if err != nil </span><span class="cov0" title="0">{
+                                return nil, ErrInvalidPath.WithDebug(err.Error())
+                        }</span>
+                        <span class="cov8" title="1">resFilePaths = append(resFilePaths, nextFiles...)</span>
+                } else<span class="cov8" title="1"> {
+                        resFilePaths = append(resFilePaths, nextFilePath)
+                }</span>
+        }
+
+        <span class="cov8" title="1">return resFilePaths, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package eimg
+
+// Default errors
+var (
+        ErrInvalidArgs = &amp;Error{
+                Name:        "invalid arguments",
+                Description: "They are few arguments",
+                Hint:        "arguments must be more than 1",
+        }
+        ErrInvalidPath = &amp;Error{
+                Name:        "invalid path",
+                Description: "This path is invalid",
+                Hint:        "Check if the path exists",
+        }
+        ErrInvalidFormat = &amp;Error{
+                Name:        "invalid format(s)",
+                Description: "The formats might be invalid",
+                Hint:        "Check the specified formats",
+        }
+        ErrFailedConvert = &amp;Error{
+                Name:        "failed to convert image object",
+                Description: "Failed to Convert image object",
+                Hint:        "Check the specified formats",
+        }
+        ErrFileOperation = &amp;Error{
+                Name:        "failed file operation",
+                Description: "Failed to (open/close/such a file operation)",
+        }
+)
+
+// Error is a representation of errors returned from this package.
+type Error struct {
+        // Name is the name of this error.
+        Name string `json:"error"`
+        // Description is the description of this error.
+        Description string `json:"decscription"`
+        // Hint gives user further information.
+        Hint string `json:"hint,omitempty"`
+        // Debug gives debug information about this error.
+        Debug string `json:"debug",omitempty`
+}
+
+// Error implement error interface
+func (e *Error) Error() string <span class="cov8" title="1">{
+        return "Name: " + e.Name + "\nDescription: " + e.Description + "\nHint: " + e.Hint + "\nDebug: " + e.Debug
+}</span>
+
+// WithHint updates hint
+func (e *Error) WithHint(hint string) *Error <span class="cov8" title="1">{
+        err := *e
+        err.Hint = hint
+        return &amp;err
+}</span>
+
+// WithDebug updates debug information
+func (e *Error) WithDebug(debug string) *Error <span class="cov8" title="1">{
+        err := *e
+        err.Debug = debug
+        return &amp;err
+}</span>
+</pre>
+		
+		</div>
+	
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+
+</body></html>
