@@ -9,16 +9,17 @@ import (
 
 func TestRun(t *testing.T) {
 	cases := []struct {
-		name    string
-		rootDir string
-		fromExt string
-		toExt   string
+		name     string
+		rootDir  string
+		fromExt  string
+		toExt    string
+		expected string
 	}{
-
-		{name: "set RootDir only", rootDir: "test/documents", fromExt: "", toExt: ""},
-		{name: "set RootDir and FromExt", rootDir: "test/img", fromExt: "gif", toExt: ""},
-		{name: "set RootDir and ToExt", rootDir: "test/img", fromExt: "", toExt: "gif"},
-		{name: "set all arguments", rootDir: "test/img", fromExt: "gif", toExt: "jpeg"},
+		{name: "invalid file", rootDir: ".", fromExt: "txt", toExt: "", expected: "Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: test/documents/fuga.txt\nDebug: image: unknown format"},
+		{name: "set RootDir only", rootDir: "test/documents", fromExt: "", toExt: "", expected: ""},
+		{name: "set RootDir and FromExt", rootDir: "test/img", fromExt: "gif", toExt: "", expected: ""},
+		{name: "set RootDir and ToExt", rootDir: "test/img", fromExt: "", toExt: "gif", expected: ""},
+		{name: "set all arguments", rootDir: "test/img", fromExt: "gif", toExt: "jpeg", expected: ""},
 	}
 
 	for _, c := range cases {
@@ -55,8 +56,12 @@ func TestRun(t *testing.T) {
 
 			eimg := New()
 			if err := eimg.Run(); err != nil {
-				t.Errorf("faield to Run: %s", err)
+				if err.Error() != c.expected {
+					t.Errorf("failed Run():\n%s\n", err.Error())
+				}
 			}
+
+			os.Args = []string{}
 		})
 	}
 }
