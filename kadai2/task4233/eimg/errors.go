@@ -42,7 +42,7 @@ type Error struct {
 
 // Error implement error interface
 func (e *Error) Error() string {
-	return e.Name
+	return "Name: " + e.Name + "\nDescription: " + e.Description + "\nHint: " + e.Hint + "\nDebug: " + e.Debug
 }
 
 // WithHint updates hint

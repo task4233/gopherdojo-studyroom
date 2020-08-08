@@ -16,7 +16,7 @@ func TestEimg(t *testing.T) {
 
 // TSetParameters tests SetPerameters().
 func TSetParameters(t *testing.T) {
-    cases := []struct {
+	cases := []struct {
 		name     string
 		rootDir  string
 		fromExt  string
@@ -27,6 +27,7 @@ func TSetParameters(t *testing.T) {
 		{name: "set RootDir and FromExt", rootDir: "test/img", fromExt: "gif", toExt: "", expected: []string{"test/img", "gif", "png"}},
 		{name: "set RootDir and ToExt", rootDir: "test/img", fromExt: "", toExt: "gif", expected: []string{"test/img", "jpeg", "gif"}},
 		{name: "set all arguments", rootDir: "test/img", fromExt: "gif", toExt: "jpeg", expected: []string{"test/img", "gif", "jpeg"}},
+		{name: "invalid path", rootDir: "test/test", fromExt: "", toExt: "", expected: []string{"Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: stat test/test: no such file or directory"}},
 	}
 
 	unzip := exec.Command("unzip", "test.zip")
@@ -61,19 +62,15 @@ func TSetParameters(t *testing.T) {
 
 			eimg := New()
 			if err := eimg.SetParameters(); err != nil {
-				t.Errorf("failed to set parameter: %#v", err)
-			}
-
-			if eimg.RootDir != c.expected[0] {
+				if err.Error() != c.expected[0] {
+					t.Errorf("failed to set parameter:\n%s\n", err.Error())
+				}
+			} else if eimg.RootDir != c.expected[0] {
 				t.Errorf("RootDir=> Actual: %s, Expected: %s", eimg.RootDir, c.expected[0])
-
-			}
-			if eimg.FromExt != c.expected[1] {
+			} else if eimg.FromExt != c.expected[1] {
 				t.Errorf("FromExt=> Actual: %s, Expected: %s", eimg.FromExt, c.expected[1])
 
-			}
-
-			if eimg.ToExt != c.expected[2] {
+			} else if eimg.ToExt != c.expected[2] {
 				t.Errorf("ToExt=> Actual: %s, Expected: %s", eimg.ToExt, c.expected[2])
 
 			}
@@ -105,7 +102,7 @@ func TEncodeFile(t *testing.T) {
 			fmt.Printf("[TEST] %s begins\n", c.name)
 			unzip := exec.Command("unzip", "test.zip")
 			if err := unzip.Run(); err != nil {
-				t.Errorf("failed to unzip...")
+				t.Errorf("failed to unzip: %s", err.Error())
 			}
 			defer func() {
 				if _, err := os.Stat("test"); err == nil {
@@ -152,7 +149,7 @@ func TConvertExtension(t *testing.T) {
 			fmt.Printf("[TEST] %s begins\n", c.name)
 			unzip := exec.Command("unzip", "test.zip")
 			if err := unzip.Run(); err != nil {
-				t.Errorf("failed to unzip...")
+				t.Errorf("failed to unzip: %s", err.Error())
 			}
 
 			defer func() {
