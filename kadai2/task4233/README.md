@@ -1,4 +1,7 @@
 # io.Readerとio.Writerの調査
+![GitHub Actions](https://github.com/task4233/gopherdojo-studyroom/workflows/Static%20check%20with%20PR%20and%20Add%20comment%20each%20error/badge.svg)
+![GitHub Actions](https://github.com/task4233/gopherdojo-studyroom/workflows/make%20godoc%20and%20deploy%20gh-pages%20branch/badge.svg)
+
 ## 標準パッケージでどのように使われているかを調査する
 ### ioパッケージとは
 - ioパッケージは、I/Oプリミティブへの基本インタフェースを提供する
@@ -46,12 +49,14 @@ type Writer interface {
 
 # テストを書いてみよう
 ## テストのしやすさを考えてリファクタリングする & テーブル駆動テストを行う
-課題1のときからやっていたつもりです。機能ごとにメソッドを分割し、テストではテーブル駆動のテストケースを用いました。
+機能ごとにメソッドを分割し、テストではテーブル駆動のテストケースを用いました。
+
 
 ## テストのカバレッジを取る
-カバレッジは71.9%でした。テストが低かった理由は、エラー処理を起こす入力例が思いつかなかったためです。
+元々のカバレッジは71.9%でした。エラー用のテスト追加後は、88.0%に上がりました🎉
 
-```
+### Before
+```shell
 $ cat tools/getCoverage.sh 
 #!/bin/sh
 
@@ -63,4 +68,19 @@ $ sh tools/getCoverage.sh
 ok  	github.com/task4233/gopherdojo-studyroom/kadai1/task4233/eimg	0.050s	coverage: 71.9% of statements
 ```
 
+### After
+```shell
+$ sh tools/getCoverage.sh 
+ok  	github.com/task4233/gopherdojo-studyroom/kadai2/task4233/eimg	0.059s	coverage: 88.0% of statements
+
+```
+
 ## テストヘルパーを作る
+テストヘルパー関数に`t.Helper()`を追加しました。
+
+## 感想と課題
+前回の課題であったコミットログの問題は解決できたと考えている。
+一方で、どう頑張っても通らないエラーハンドリングのせいでカバレッジが高くならなかったのは残念だった。
+具体的には、`os.Create()`で作成した後の`os.Open()`のエラーハンドリングがそれに該当する。
+また、実装で`os.Exit(1)`になっている部分もテストできないように感じた。
+[golangで終了を確認するテストの書き方](https://mattn.kaoriya.net/software/lang/go/20161025113154.htm)という記事があったが、そこまでしてカバレッジを上げる必要があるのか？と疑問に思ったため、これは不採用とした。
