@@ -139,6 +139,8 @@ func TConvertExtension(t *testing.T) {
 		toExt    string
 		expected []string
 	}{
+		{name: "invalid file", rootDir: ".", fromExt: "txt", toExt: "", expected: []string{"Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: Check the specified formats\nDebug: image: unknown format"}},
+		{name: "invalid path", rootDir: "test/test", fromExt: "jpeg", toExt: "png", expected: []string{"Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: open test/test: no such file or directory"}},
 		{name: "check png", rootDir: "test", fromExt: "jpeg", toExt: "png", expected: []string{"test/img/green.png"}},
 		{name: "check jpg", rootDir: "test", fromExt: "gif", toExt: "jpeg", expected: []string{"test/img/blue.jpeg"}},
 		{name: "check gif", rootDir: "test", fromExt: "png", toExt: "gif", expected: []string{"test/img/red.gif", "test/white.gif"}},
@@ -169,12 +171,14 @@ func TConvertExtension(t *testing.T) {
 			eimg.ToExt = c.toExt
 
 			if err := eimg.ConvertExtension(); err != nil {
-				t.Errorf("failed ConvertExtension: %s", err)
-			}
-
-			for _, filePath := range c.expected {
-				if _, err := os.Stat(filePath); err != nil {
-					t.Errorf("%s: %s", filePath, err)
+				if err.Error() != c.expected[0] {
+					t.Errorf("failed ConvertExtension():\n%s\n", err.Error())
+				}
+			} else {
+				for _, filePath := range c.expected {
+					if _, err := os.Stat(filePath); err != nil {
+						t.Errorf("%s: %s", filePath, err)
+					}
 				}
 			}
 		})
