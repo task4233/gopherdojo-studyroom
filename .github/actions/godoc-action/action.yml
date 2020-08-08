@@ -1,0 +1,20 @@
+name: 'godoc generator'
+author: 'task4233'
+description: 'generate godoc'
+inputs:
+  run:
+    description: 'generate godoc'
+    required: true
+  working-dir:
+    description: 'package working directory.'
+    default: 'kadai2/task4233/eimg'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.run }}
+    - ${{ inputs.working-dir }}
+branding:
+  icon: 'check-circle'
+  color: 'green'
