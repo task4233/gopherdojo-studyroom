@@ -45,7 +45,22 @@ type Writer interface {
  - 例えば、渡されたオブジェクトから読み出しをしたい場合に、ネットワーク系のオブジェクトでもファイルオブジェクトでもバッファでもその中身を考えずに`Read()`を呼び出すだけで良い
 
 # テストを書いてみよう
-## テストのしやすさを考えてリファクタリングする
+## テストのしやすさを考えてリファクタリングする & テーブル駆動テストを行う
+課題1のときからやっていたつもりです。機能ごとにメソッドを分割し、テストではテーブル駆動のテストケースを用いました。
+
 ## テストのカバレッジを取る
-## テーブル駆動テストを行う
+カバレッジは71.9%でした。テストが低かった理由は、エラー処理を起こす入力例が思いつかなかったためです。
+
+```
+$ cat tools/getCoverage.sh 
+#!/bin/sh
+
+cd kadai2/task4233/eimg
+go test -coverprofile=profile ./...
+go tool cover -html=profile
+/home/al17111/work/go/src/github.com/task4233/gopherdojo-studyroom (kadai2-task4233)
+$ sh tools/getCoverage.sh 
+ok  	github.com/task4233/gopherdojo-studyroom/kadai1/task4233/eimg	0.050s	coverage: 71.9% of statements
+```
+
 ## テストヘルパーを作る
