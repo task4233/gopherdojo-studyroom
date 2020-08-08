@@ -104,6 +104,9 @@ func (eimg *Eimg) ConvertExtension() error {
 
 	// encode each file
 	for _, filePath := range filePaths {
+		if filePath == "." {
+			continue
+		}
 		extension := filepath.Ext(filePath)
 		if extension == "" {
 			continue
@@ -111,6 +114,7 @@ func (eimg *Eimg) ConvertExtension() error {
 
 		// filepath.Ext starts with "."
 		// e.g.) filepath.Ext(filePath) => .txt
+		fmt.Printf("file: %s, FromExt: %s\n", extension[1:], eimg.FromExt)
 		if extension[1:] == eimg.FromExt {
 			err := eimg.EncodeFile(filePath)
 			if err != nil {
@@ -138,11 +142,11 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	// make image object
 	img, _, err := image.Decode(file)
 	if err != nil {
-		return ErrFailedConvert.WithDebug(err.Error())
+		return ErrFailedConvert.WithDebug(err.Error()).WithHint(filePath)
 	}
 	out, err := os.Create(filePath)
 	if err != nil {
-		return ErrInvalidFormat.WithDebug(err.Error())
+		return ErrInvalidFormat.WithDebug(err.Error()).WithHint(filePath)
 	}
 	defer func() {
 		cerr := out.Close()
@@ -166,7 +170,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	case "gif":
 		err = gif.Encode(out, img, nil)
 		if err != nil {
-			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is gif.")
+			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is gif.").WithHint(filePath)
 		}
 	}
 
@@ -178,7 +182,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	}
 	newFilePath := filePath[:len(filePath)-len(eimg.FromExt)] + eimg.ToExt
 	if err := os.Rename(filePath, newFilePath); err != nil {
-		return ErrFailedConvert.WithDebug(err.Error())
+		return ErrFailedConvert.WithDebug(err.Error()).WithHint(filePath)
 	}
 
 	return nil

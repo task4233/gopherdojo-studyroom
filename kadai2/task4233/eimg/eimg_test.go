@@ -94,7 +94,7 @@ func TEncodeFile(t *testing.T) {
 		toExt    string
 		expected string
 	}{
-		{name: "invalid file", filePath: ".", fromExt: "txt", toExt: "", expected: "Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: Check the specified formats\nDebug: image: unknown format"},
+		{name: "invalid file", filePath: ".", fromExt: "txt", toExt: "", expected: "Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: .\nDebug: image: unknown format"},
 		{name: "invalid path", filePath: "test/test", fromExt: "", toExt: "", expected: "Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: open test/test: no such file or directory"},
 		{name: "check png", filePath: "test/img/green.jpeg", fromExt: "jpeg", toExt: "png", expected: "test/img/green.png"},
 		{name: "check jpg", filePath: "test/img/blue.gif", fromExt: "gif", toExt: "jpeg", expected: "test/img/blue.jpeg"},
@@ -145,7 +145,7 @@ func TConvertExtension(t *testing.T) {
 		toExt    string
 		expected []string
 	}{
-		{name: "invalid file", rootDir: ".", fromExt: "txt", toExt: "", expected: []string{"Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: Check the specified formats\nDebug: image: unknown format"}},
+		{name: "invalid file", rootDir: ".", fromExt: "txt", toExt: "", expected: []string{"Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: test/documents/fuga.txt\nDebug: image: unknown format"}},
 		{name: "invalid path", rootDir: "test/test", fromExt: "jpeg", toExt: "png", expected: []string{"Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: open test/test: no such file or directory"}},
 		{name: "check png", rootDir: "test", fromExt: "jpeg", toExt: "png", expected: []string{"test/img/green.png"}},
 		{name: "check jpg", rootDir: "test", fromExt: "gif", toExt: "jpeg", expected: []string{"test/img/blue.jpeg"}},
