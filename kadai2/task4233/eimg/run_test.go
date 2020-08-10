@@ -3,7 +3,6 @@ package eimg
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"testing"
 )
 
@@ -38,21 +37,12 @@ func TestRun(t *testing.T) {
 				os.Args = append(os.Args, c.rootDir)
 			}
 
-			// extract test zip file
-			unzip := exec.Command("unzip", "test.zip")
-			if err := unzip.Run(); err != nil {
-				t.Errorf("failed to unzip...")
-			}
 			defer func() {
-				if _, err := os.Stat("test"); err == nil {
-					rmAll := exec.Command("rm", "-rf", "./test")
-					if err := rmAll.Run(); err != nil {
-						return
-					}
-				} else {
-					return
+				if err := os.RemoveAll("test"); err != nil {
+					t.Errorf("Failed to remove test")
 				}
 			}()
+			CopyFilesRec(t, "testdata", "test")
 
 			eimg := New()
 			if err := eimg.Run(); err != nil {

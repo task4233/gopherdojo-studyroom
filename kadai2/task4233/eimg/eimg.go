@@ -69,7 +69,7 @@ func (eimg *Eimg) SetParameters() error {
 	}
 
 	// Init Parameters for tests like
-    //  https://github.com/task4233/gopherdojo-studyroom/blob/kadai1-task4233/kadai2/task4233/eimg/eimg_test.go#L28-L29 .
+	//  https://github.com/task4233/gopherdojo-studyroom/blob/kadai1-task4233/kadai2/task4233/eimg/eimg_test.go#L28-L29 .
 	*fr = "jpeg"
 	*to = "png"
 
@@ -78,7 +78,7 @@ func (eimg *Eimg) SetParameters() error {
 	args := flag.Args()
 
 	// set information.
-    // validation is implemented in EncodeFile() for functional extension.
+	// validation is implemented in EncodeFile() for functional extension.
 	if fr != nil && *fr != "jpeg" {
 		eimg.FromExt = *fr
 	}
@@ -116,7 +116,6 @@ func (eimg *Eimg) ConvertExtension() error {
 
 		// filepath.Ext starts with "."
 		// e.g.) filepath.Ext(filePath) => .txt
-		fmt.Printf("file: %s, FromExt: %s\n", extension[1:], eimg.FromExt)
 		if extension[1:] == eimg.FromExt {
 			err := eimg.EncodeFile(filePath)
 			if err != nil {
@@ -136,9 +135,8 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	// ref: https://www.yunabe.jp/docs/golang_pitfall.html
 	defer func() {
 		cerr := file.Close()
-		if cerr == nil {
-            fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", filePath)
-            return
+		if cerr != nil {
+			fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", filePath)
 		}
 	}()
 
@@ -153,9 +151,8 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	}
 	defer func() {
 		cerr := out.Close()
-		if cerr == nil {
-            fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", filePath)
-            return
+		if cerr != nil {
+			fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", filePath)
 		}
 	}()
 

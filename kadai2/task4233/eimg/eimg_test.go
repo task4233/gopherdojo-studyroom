@@ -2,14 +2,15 @@ package eimg
 
 import (
 	"fmt"
+	"io"
 	"os"
-	"os/exec"
+	"path/filepath"
 	"testing"
 )
 
 // TestSetParameters tests SetPerameters().
 func TestSetParameters(t *testing.T) {
-    cases := []struct {
+	cases := []struct {
 		name     string
 		rootDir  string
 		fromExt  string
@@ -23,15 +24,14 @@ func TestSetParameters(t *testing.T) {
 		{name: "invalid path", rootDir: "test/test", fromExt: "", toExt: "", expected: []string{"Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: stat test/test: no such file or directory"}},
 	}
 
-	unzip := exec.Command("unzip", "test.zip")
-	if err := unzip.Run(); err != nil {
-		t.Errorf("failed to unzip")
-	}
 	defer func() {
 		if _, err := os.Stat("test"); err == nil {
-			RemoveFilesRec(t, "test")
+			if err := os.RemoveAll("test"); err != nil {
+				t.Errorf("Failed to remove test")
+			}
 		}
 	}()
+	CopyFilesRec(t, "testdata", "test")
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -71,7 +71,7 @@ func TestSetParameters(t *testing.T) {
 
 // TestEncodeFile tests EncodeFile()
 func TestEncodeFile(t *testing.T) {
-    cases := []struct {
+	cases := []struct {
 		name     string
 		filePath string
 		fromExt  string
@@ -90,15 +90,13 @@ func TestEncodeFile(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			fmt.Printf("[TEST] %s begins\n", c.name)
-			unzip := exec.Command("unzip", "test.zip")
-			if err := unzip.Run(); err != nil {
-				t.Errorf("failed to unzip: %s", err.Error())
-			}
+
 			defer func() {
-				if _, err := os.Stat("test"); err == nil {
-					RemoveFilesRec(t, "test")
+				if err := os.RemoveAll("test"); err != nil {
+					t.Errorf("Failed to remove test")
 				}
 			}()
+			CopyFilesRec(t, "testdata", "test")
 
 			eimg.FromExt = c.fromExt
 			eimg.ToExt = c.toExt
@@ -115,7 +113,7 @@ func TestEncodeFile(t *testing.T) {
 
 // TestConvertExtension tests ConvertExtension()
 func TConvertExtension(t *testing.T) {
-    cases := []struct {
+	cases := []struct {
 		name     string
 		rootDir  string
 		fromExt  string
@@ -134,16 +132,13 @@ func TConvertExtension(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			fmt.Printf("[TEST] %s begins\n", c.name)
-			unzip := exec.Command("unzip", "test.zip")
-			if err := unzip.Run(); err != nil {
-				t.Errorf("failed to unzip: %s", err.Error())
-			}
-
 			defer func() {
-				if _, err := os.Stat("test"); err == nil {
-                    RemoveFilesRec(t, "test")
+				if err := os.RemoveAll("test"); err != nil {
+					t.Errorf("Failed to remove test")
 				}
 			}()
+			CopyFilesRec(t, "testdata", "test")
+
 			eimg.RootDir = c.rootDir
 			eimg.FromExt = c.fromExt
 			eimg.ToExt = c.toExt
@@ -163,26 +158,59 @@ func TConvertExtension(t *testing.T) {
 	}
 }
 
-// RemoveFilesRec removes files recursively
-func RemoveFilesRec(t *testing.T, filePath string) {
-    t.Helper()
+// CopyDir copies files recursively
+func CopyFilesRec(t *testing.T, filePath string, destRootPath string) {
+	t.Helper()
 
-    // Get filePaths recursively 
-    filePaths, err := GetFilePathsRec(filePath)
-    if err != nil {
-        t.Errorf("Failed to GetFilePathsRec(): %s", err)
-    }
+	// Get filePaths recursively
+	filePaths, err := GetFilePathsRec(filePath)
+	if err != nil {
+		t.Errorf("Failed to GetFilePathsRec(): %s", err)
+	}
 
-    // removeAll
-    var errS []error
-    for _, file := range filePaths {
-        if err := os.Remove(file); err != nil {
-            errS = append(errS, err)
-        }
-    }
-    if len(errS) > 0 {
-        t.Errorf("Failed to Delete files: %#v", errS)
-    }
+	for _, srcFilePath := range filePaths {
+		func() {
+			// open srcFile
+			srcFile, err := os.Open(srcFilePath)
+			if err != nil {
+				t.Errorf("Failed to open file: %s", srcFilePath)
+			}
+			defer func() {
+				cerr := srcFile.Close()
+				if cerr != nil {
+					fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", srcFilePath)
+				}
+			}()
+
+			// destFile should not exist
+			// if exists, overwrites it
+			destFilePath := destRootPath + srcFilePath[len(filePath):]
+
+			// craete dir if not exist
+			if _, err := os.Stat(filepath.Dir(destFilePath)); err != nil {
+				if err := os.MkdirAll(filepath.Dir(destFilePath), 0755); err != nil {
+					t.Errorf("Failed to create dir: %s\n", err)
+				}
+			}
+
+			// create file
+			destFile, err := os.Create(destFilePath)
+			if err != nil {
+				t.Errorf("Failed to create file: %s\n", destFilePath)
+			}
+			defer func() {
+				cerr := destFile.Close()
+				if cerr != nil {
+					fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", destFilePath)
+				}
+			}()
+
+			// copy file
+			_, err = io.Copy(destFile, srcFile)
+			if err != nil {
+				t.Errorf("Failed to copy file: %s\n", srcFilePath)
+			}
+		}()
+	}
+
 }
-
-
