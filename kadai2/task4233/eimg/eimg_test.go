@@ -9,9 +9,7 @@ import (
 
 // TestSetParameters tests SetPerameters().
 func TestSetParameters(t *testing.T) {
-	t.Helper()
-
-	cases := []struct {
+    cases := []struct {
 		name     string
 		rootDir  string
 		fromExt  string
@@ -31,11 +29,7 @@ func TestSetParameters(t *testing.T) {
 	}
 	defer func() {
 		if _, err := os.Stat("test"); err == nil {
-			rmAll := exec.Command("rm", "-rf", "./test")
-			if err := rmAll.Run(); err != nil {
-                fmt.Fprintf(os.Stdout, "Failed to run rmAll: %s\n", err.Error())
-                return
-			}
+			RemoveFilesRec(t, "test")
 		}
 	}()
 
@@ -77,9 +71,7 @@ func TestSetParameters(t *testing.T) {
 
 // TestEncodeFile tests EncodeFile()
 func TestEncodeFile(t *testing.T) {
-	t.Helper()
-
-	cases := []struct {
+    cases := []struct {
 		name     string
 		filePath string
 		fromExt  string
@@ -104,11 +96,7 @@ func TestEncodeFile(t *testing.T) {
 			}
 			defer func() {
 				if _, err := os.Stat("test"); err == nil {
-					rmAll := exec.Command("rm", "-rf", "./test")
-					if err := rmAll.Run(); err != nil {
-                        fmt.Fprintf(os.Stderr, "Failed to run rmAll: %s\n", err.Error())
-                        return
-					}
+					RemoveFilesRec(t, "test")
 				}
 			}()
 
@@ -127,9 +115,7 @@ func TestEncodeFile(t *testing.T) {
 
 // TestConvertExtension tests ConvertExtension()
 func TConvertExtension(t *testing.T) {
-	t.Helper()
-
-	cases := []struct {
+    cases := []struct {
 		name     string
 		rootDir  string
 		fromExt  string
@@ -155,11 +141,7 @@ func TConvertExtension(t *testing.T) {
 
 			defer func() {
 				if _, err := os.Stat("test"); err == nil {
-					rmAll := exec.Command("rm", "-rf", "./test")
-					if err := rmAll.Run(); err != nil {
-                        fmt.Fprintf(os.Stderr, "Failed to run rmAll: %s\n", err.Error())
-                        return
-					}
+                    RemoveFilesRec(t, "test")
 				}
 			}()
 			eimg.RootDir = c.rootDir
@@ -180,3 +162,27 @@ func TConvertExtension(t *testing.T) {
 		})
 	}
 }
+
+// RemoveFilesRec removes files recursively
+func RemoveFilesRec(t *testing.T, filePath string) {
+    t.Helper()
+
+    // Get filePaths recursively 
+    filePaths, err := GetFilePathsRec(filePath)
+    if err != nil {
+        t.Errorf("Failed to GetFilePathsRec(): %s", err)
+    }
+
+    // removeAll
+    var errS []error
+    for _, file := range filePaths {
+        if err := os.Remove(file); err != nil {
+            errS = append(errS, err)
+        }
+    }
+    if len(errS) > 0 {
+        t.Errorf("Failed to Delete files: %#v", errS)
+    }
+}
+
+
