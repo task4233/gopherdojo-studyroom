@@ -7,15 +7,8 @@ import (
 	"testing"
 )
 
-// TestEimg tests functions in eimg package as unittest.
-func TestEimg(t *testing.T) {
-	TSetParameters(t)
-	TEncodeFile(t)
-	TConvertExtension(t)
-}
-
-// TSetParameters tests SetPerameters().
-func TSetParameters(t *testing.T) {
+// TestSetParameters tests SetPerameters().
+func TestSetParameters(t *testing.T) {
 	t.Helper()
 
 	cases := []struct {
@@ -40,10 +33,9 @@ func TSetParameters(t *testing.T) {
 		if _, err := os.Stat("test"); err == nil {
 			rmAll := exec.Command("rm", "-rf", "./test")
 			if err := rmAll.Run(); err != nil {
-				return
+                fmt.Fprintf(os.Stdout, "Failed to run rmAll: %s\n", err.Error())
+                return
 			}
-		} else {
-			return
 		}
 	}()
 
@@ -83,8 +75,8 @@ func TSetParameters(t *testing.T) {
 	}
 }
 
-// TEncodeFile tests EncodeFile()
-func TEncodeFile(t *testing.T) {
+// TestEncodeFile tests EncodeFile()
+func TestEncodeFile(t *testing.T) {
 	t.Helper()
 
 	cases := []struct {
@@ -114,10 +106,9 @@ func TEncodeFile(t *testing.T) {
 				if _, err := os.Stat("test"); err == nil {
 					rmAll := exec.Command("rm", "-rf", "./test")
 					if err := rmAll.Run(); err != nil {
-						return
+                        fmt.Fprintf(os.Stderr, "Failed to run rmAll: %s\n", err.Error())
+                        return
 					}
-				} else {
-					return
 				}
 			}()
 
@@ -134,7 +125,7 @@ func TEncodeFile(t *testing.T) {
 	}
 }
 
-// TConvertExtension tests ConvertExtension()
+// TestConvertExtension tests ConvertExtension()
 func TConvertExtension(t *testing.T) {
 	t.Helper()
 
@@ -166,10 +157,9 @@ func TConvertExtension(t *testing.T) {
 				if _, err := os.Stat("test"); err == nil {
 					rmAll := exec.Command("rm", "-rf", "./test")
 					if err := rmAll.Run(); err != nil {
-						return
+                        fmt.Fprintf(os.Stderr, "Failed to run rmAll: %s\n", err.Error())
+                        return
 					}
-				} else {
-					return
 				}
 			}()
 			eimg.RootDir = c.rootDir

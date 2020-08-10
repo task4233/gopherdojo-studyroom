@@ -137,7 +137,8 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	defer func() {
 		cerr := file.Close()
 		if cerr == nil {
-			return
+            fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", filePath)
+            return
 		}
 	}()
 
@@ -153,7 +154,8 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	defer func() {
 		cerr := out.Close()
 		if cerr == nil {
-			return
+            fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", filePath)
+            return
 		}
 	}()
 
