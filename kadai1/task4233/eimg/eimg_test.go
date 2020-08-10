@@ -7,15 +7,8 @@ import (
 	"testing"
 )
 
-// TestEimg tests functions in eimg package as unittest.
-func TestEimg(t *testing.T) {
-	TSetParameters(t)
-	TEncodeFile(t)
-	TConvertExtension(t)
-}
-
-// TSetParameters tests SetPerameters().
-func TSetParameters(t *testing.T) {
+// TestSetParameters tests SetPerameters().
+func TestSetParameters(t *testing.T) {
 
 	cases := []struct {
 		name     string
@@ -85,8 +78,8 @@ func TSetParameters(t *testing.T) {
 	}
 }
 
-// TEncodeFile tests EncodeFile()
-func TEncodeFile(t *testing.T) {
+// TestEncodeFile tests EncodeFile()
+func TestEncodeFile(t *testing.T) {
 	cases := []struct {
 		name     string
 		filePath string
@@ -132,8 +125,8 @@ func TEncodeFile(t *testing.T) {
 	}
 }
 
-// TConvertExtension tests ConvertExtension()
-func TConvertExtension(t *testing.T) {
+// TestConvertExtension tests ConvertExtension()
+func TestConvertExtension(t *testing.T) {
 	cases := []struct {
 		name     string
 		rootDir  string
