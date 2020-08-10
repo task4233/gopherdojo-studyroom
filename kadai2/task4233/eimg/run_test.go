@@ -14,7 +14,7 @@ func TestRun(t *testing.T) {
 		toExt    string
 		expected string
 	}{
-		{name: "invalid file", rootDir: ".", fromExt: "txt", toExt: "", expected: "Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: test/documents/fuga.txt\nDebug: image: unknown format"},
+		{name: "invalid file", rootDir: ".", fromExt: "txt", toExt: "", expected: "Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: Check the specified formats\nDebug: test/documents/fuga.txt"},
 		{name: "set RootDir only", rootDir: "test/documents", fromExt: "", toExt: "", expected: ""},
 		{name: "set RootDir and FromExt", rootDir: "test/img", fromExt: "gif", toExt: "", expected: ""},
 		{name: "set RootDir and ToExt", rootDir: "test/img", fromExt: "", toExt: "gif", expected: ""},

@@ -89,7 +89,7 @@ func (eimg *Eimg) SetParameters() error {
 	}
 	if args[len(args)-1] != "." {
 		if _, err := os.Stat(args[len(args)-1]); err != nil {
-			return ErrInvalidPath.WithDebug(err.Error())
+			return ErrInvalidPath.WrapErr(err)
 		}
 		eimg.RootDir = args[len(args)-1]
 	}
@@ -101,7 +101,7 @@ func (eimg *Eimg) SetParameters() error {
 func (eimg *Eimg) ConvertExtension() error {
 	filePaths, err := GetFilePathsRec(eimg.RootDir)
 	if err != nil {
-		return ErrInvalidPath.WithDebug(err.Error())
+		return ErrInvalidPath.WithDebug(eimg.RootDir).WrapErr(err)
 	}
 
 	// encode each file
@@ -130,7 +130,7 @@ func (eimg *Eimg) ConvertExtension() error {
 func (eimg *Eimg) EncodeFile(filePath string) error {
 	file, err := os.Open(filepath.Clean(filePath))
 	if err != nil {
-		return ErrInvalidPath.WithDebug(err.Error())
+		return ErrInvalidPath.WithDebug(filepath.Clean(filePath)).WrapErr(err)
 	}
 	// ref: https://www.yunabe.jp/docs/golang_pitfall.html
 	defer func() {
@@ -143,11 +143,11 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	// make image object
 	img, _, err := image.Decode(file)
 	if err != nil {
-		return ErrFailedConvert.WithDebug(err.Error()).WithHint(filePath)
+		return ErrFailedConvert.WithDebug(filePath).WrapErr(err)
 	}
 	out, err := os.Create(filePath)
 	if err != nil {
-		return ErrInvalidFormat.WithDebug(err.Error()).WithHint(filePath)
+		return ErrInvalidFormat.WithDebug(filePath).WrapErr(err)
 	}
 	defer func() {
 		cerr := out.Close()
@@ -161,17 +161,17 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	case "png":
 		err := png.Encode(out, img)
 		if err != nil {
-			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is png.")
+			return ErrFailedConvert.WithDebug(filePath).WithHint("converted format is png.").WrapErr(err)
 		}
 	case "jpg", "jpeg":
 		err := jpeg.Encode(out, img, nil)
 		if err != nil {
-			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is jpeg/jpg.")
+			return ErrFailedConvert.WithDebug(filePath).WithHint("converted format is jpeg/jpg.").WrapErr(err)
 		}
 	case "gif":
 		err = gif.Encode(out, img, nil)
 		if err != nil {
-			return ErrFailedConvert.WithDebug(err.Error()).WithHint("converted format is gif.").WithHint(filePath)
+			return ErrFailedConvert.WithDebug(filePath).WithHint("converted format is gif.").WrapErr(err)
 		}
 	}
 
@@ -179,11 +179,11 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	fileName := filepath.Base(filePath) + filepath.Ext(filePath)
 	// fileName must meet len(fileName) > len(eimg.FromExt)
 	if len(fileName) <= len(eimg.FromExt) {
-		return ErrInvalidPath.WithDebug(err.Error()).WithHint("A file name might be less than extension")
+		return ErrInvalidPath.WithDebug(fileName).WithHint("A file name might be less than extension").WrapErr(err)
 	}
 	newFilePath := filePath[:len(filePath)-len(eimg.FromExt)] + eimg.ToExt
 	if err := os.Rename(filePath, newFilePath); err != nil {
-		return ErrFailedConvert.WithDebug(err.Error()).WithHint(filePath)
+		return ErrFailedConvert.WithDebug(newFilePath).WithHint(filePath).WrapErr(err)
 	}
 
 	return nil
@@ -196,7 +196,7 @@ func GetFilePathsRec(filePath string) ([]string, error) {
 
 	files, err := ioutil.ReadDir(filePath)
 	if err != nil {
-		return nil, ErrInvalidPath.WithDebug(err.Error())
+		return nil, ErrInvalidPath.WithDebug(filePath).WrapErr(err)
 	}
 
 	// add paths recursively
@@ -205,7 +205,7 @@ func GetFilePathsRec(filePath string) ([]string, error) {
 		if file.IsDir() {
 			nextFiles, err := GetFilePathsRec(nextFilePath)
 			if err != nil {
-				return nil, ErrInvalidPath.WithDebug(err.Error())
+				return nil, ErrInvalidPath.WithDebug(nextFilePath).WrapErr(err)
 			}
 			resFilePaths = append(resFilePaths, nextFiles...)
 		} else {

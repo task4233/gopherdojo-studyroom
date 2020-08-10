@@ -1,5 +1,7 @@
 package eimg
 
+import "fmt"
+
 // Default errors
 var (
 	ErrInvalidArgs = &Error{
@@ -38,6 +40,8 @@ type Error struct {
 	Hint string `json:"hint,omitempty"`
 	// Debug gives debug information about this error.
 	Debug string `json:"debug",omitempty`
+	// Err is the error for preserving
+	Err error `json:"error",omitempty`
 }
 
 // Error implement error interface
@@ -57,4 +61,11 @@ func (e *Error) WithDebug(debug string) *Error {
 	err := *e
 	err.Debug = debug
 	return &err
+}
+
+// WrapErr wraps error information
+func (e *Error) WrapErr(err error) *Error {
+	_err := *e
+	_err.Err = fmt.Errorf("%w", err)
+	return &_err
 }

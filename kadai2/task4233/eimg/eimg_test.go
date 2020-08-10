@@ -21,7 +21,7 @@ func TestSetParameters(t *testing.T) {
 		{name: "set RootDir and FromExt", rootDir: "test/img", fromExt: "gif", toExt: "", expected: []string{"test/img", "gif", "png"}},
 		{name: "set RootDir and ToExt", rootDir: "test/img", fromExt: "", toExt: "gif", expected: []string{"test/img", "jpeg", "gif"}},
 		{name: "set all arguments", rootDir: "test/img", fromExt: "gif", toExt: "jpeg", expected: []string{"test/img", "gif", "jpeg"}},
-		{name: "invalid path", rootDir: "test/test", fromExt: "", toExt: "", expected: []string{"Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: stat test/test: no such file or directory"}},
+		{name: "invalid path", rootDir: "test/test", fromExt: "", toExt: "", expected: []string{"Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: "}},
 	}
 
 	defer func() {
@@ -51,7 +51,7 @@ func TestSetParameters(t *testing.T) {
 			eimg := New()
 			if err := eimg.SetParameters(); err != nil {
 				if err.Error() != c.expected[0] {
-					t.Errorf("failed to set parameter:\n%s\n", err.Error())
+					t.Errorf("failed to set parameter:\n%s\n%s\n", err.Error(), c.expected[0])
 				}
 			} else if eimg.RootDir != c.expected[0] {
 				t.Errorf("RootDir=> Actual: %s, Expected: %s", eimg.RootDir, c.expected[0])
@@ -78,8 +78,8 @@ func TestEncodeFile(t *testing.T) {
 		toExt    string
 		expected string
 	}{
-		{name: "invalid file", filePath: ".", fromExt: "txt", toExt: "", expected: "Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: .\nDebug: image: unknown format"},
-		{name: "invalid path", filePath: "test/test", fromExt: "", toExt: "", expected: "Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: open test/test: no such file or directory"},
+		{name: "invalid file", filePath: ".", fromExt: "txt", toExt: "", expected: "Name: failed to convert image object\nDescription: Failed to Convert image object\nHint: Check the specified formats\nDebug: ."},
+		{name: "invalid path", filePath: "test/test", fromExt: "", toExt: "", expected: "Name: invalid path\nDescription: This path is invalid\nHint: Check if the path exists\nDebug: test/test"},
 		{name: "check png", filePath: "test/img/green.jpeg", fromExt: "jpeg", toExt: "png", expected: "test/img/green.png"},
 		{name: "check jpg", filePath: "test/img/blue.gif", fromExt: "gif", toExt: "jpeg", expected: "test/img/blue.jpeg"},
 		{name: "check gif", filePath: "test/img/red.png", fromExt: "png", toExt: "gif", expected: "test/img/red.gif"},
