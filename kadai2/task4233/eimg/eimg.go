@@ -99,7 +99,7 @@ func (eimg *Eimg) SetParameters() error {
 
 // ConvertExtension converts extension by using set parameters.
 func (eimg *Eimg) ConvertExtension() error {
-	filePaths, err := eimg.GetFilePathsRec(eimg.RootDir)
+	filePaths, err := GetFilePathsRec(eimg.RootDir)
 	if err != nil {
 		return ErrInvalidPath.WithDebug(err.Error())
 	}
@@ -193,7 +193,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 }
 
 // GetFilePathsRec gets file list recursively
-func (eimg *Eimg) GetFilePathsRec(filePath string) ([]string, error) {
+func GetFilePathsRec(filePath string) ([]string, error) {
 	// if declare by `var`, element might be nil
 	resFilePaths := make([]string, 0)
 
@@ -206,7 +206,7 @@ func (eimg *Eimg) GetFilePathsRec(filePath string) ([]string, error) {
 	for _, file := range files {
 		nextFilePath := filepath.Join(filePath, file.Name())
 		if file.IsDir() {
-			nextFiles, err := eimg.GetFilePathsRec(nextFilePath)
+			nextFiles, err := GetFilePathsRec(nextFilePath)
 			if err != nil {
 				return nil, ErrInvalidPath.WithDebug(err.Error())
 			}
