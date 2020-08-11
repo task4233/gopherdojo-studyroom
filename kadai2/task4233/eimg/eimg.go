@@ -127,7 +127,7 @@ func (eimg *Eimg) ConvertExtension() error {
 }
 
 // EncodeFile encodes file predefined arguments
-func (eimg *Eimg) EncodeFile(filePath string) error {
+func (eimg *Eimg) EncodeFile(filePath string) (err error) {
 	file, err := os.Open(filepath.Clean(filePath))
 	if err != nil {
 		return ErrInvalidPath.WithDebug(filepath.Clean(filePath)).WrapErr(err)
@@ -136,7 +136,7 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	defer func() {
 		cerr := file.Close()
 		if cerr != nil {
-			fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", filePath)
+            err = fmt.Errorf("failed to close file: %s: %w", filePath, cerr)
 		}
 	}()
 
@@ -152,28 +152,22 @@ func (eimg *Eimg) EncodeFile(filePath string) error {
 	defer func() {
 		cerr := out.Close()
 		if cerr != nil {
-			fmt.Fprintf(os.Stderr, "Failed to close file: %s\n", filePath)
+			err = fmt.Errorf("failed to close file: %s: %w", filePath, cerr)
 		}
 	}()
 
 	// encode each file
 	switch eimg.ToExt {
 	case "png":
-		err := png.Encode(out, img)
-		if err != nil {
-			return ErrFailedConvert.WithDebug(filePath).WithHint("converted format is png.").WrapErr(err)
-		}
+		err = png.Encode(out, img)
 	case "jpg", "jpeg":
-		err := jpeg.Encode(out, img, nil)
-		if err != nil {
-			return ErrFailedConvert.WithDebug(filePath).WithHint("converted format is jpeg/jpg.").WrapErr(err)
-		}
+		err = jpeg.Encode(out, img, nil)
 	case "gif":
 		err = gif.Encode(out, img, nil)
-		if err != nil {
-			return ErrFailedConvert.WithDebug(filePath).WithHint("converted format is gif.").WrapErr(err)
-		}
 	}
+    if err != nil {
+        return ErrFailedConvert.WithDebug(filePath).WrapErr(err)
+    }
 
 	// convert each extension
 	fileName := filepath.Base(filePath) + filepath.Ext(filePath)
