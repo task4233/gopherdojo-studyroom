@@ -1,0 +1,10 @@
+# 課題と関係ないファイルは除去
+profile
+.github
+tools
+
+## kadai1
+kadai1/task4233/eimg
+
+## kadai2
+kadai2/task4233/eimg/doc
